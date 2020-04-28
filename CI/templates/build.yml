@@ -1,0 +1,21 @@
+parameters:
+    pool: ''
+    machine: ''
+    kernel: ''
+    buildtype: ''
+
+jobs:
+- job: ${{ parameters.machine }}_baremetal
+  pool: ${{ parameters.pool }}
+  timeoutInMinutes: 0
+
+  steps:
+  - template: steps_setup.yml
+    parameters:
+      machine: ${{ parameters.machine }}
+      kernel: ${{ parameters.kernel }}
+      build_branch: $(Build.SourceBranchName)
+
+  - template: steps_build.yml
+    parameters:
+      buildtype: ${{ parameters.buildtype }}
