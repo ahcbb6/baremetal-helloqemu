@@ -18,7 +18,7 @@ These are introductory examples to showcase the use of QEMU to run baremetal app
 ## Usage: The Yocto Project & OpenEmbedded
 While these examples can easily be built manually using a toolchain from the host system, its purpose is to serve as examples for baremetal application programming on The Yocto Project and OpenEmbedded which allow users to build and run these examples, along with the required toolchain and QEMU easily using the following steps:
 
-1.- Clone the required repositories (Use -b zeus if you want a stable release)
+1.- Clone the required repositories (Use -b dunfell if you want a stable release)
 ```bash
 $ git clone https://git.yoctoproject.org/git/poky
 $ cd poky
