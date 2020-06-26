@@ -24,7 +24,7 @@ build: link
 # Link objects using the provided linker script
 link: assemble compile
 	sed -i 's~startup.o~$(call contains,startup,${objs})~g' ${lscript}.ld
-	${LD} -T${lscript}.ld ${objs} -o ${executable}.elf
+	${LD} -T${lscript}.ld ${objs} -l:libc.a -o ${executable}.elf
 
 # Assemble startup code
 assemble: builddir
