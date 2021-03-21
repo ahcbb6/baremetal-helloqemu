@@ -16,13 +16,13 @@ jobs:
   - template: templates/build.yml
     parameters:
       pool:
-        vmImage: 'ubuntu-18.04'
+        vmImage: 'ubuntu-20.04'
       buildtype: 'poky'
       machine: 'qemuarm'
 
   - template: templates/build.yml
     parameters:
       pool:
-        vmImage: 'ubuntu-18.04'
+        vmImage: 'ubuntu-20.04'
       buildtype: 'poky'
       machine: 'qemuarm64'
