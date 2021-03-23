@@ -1,5 +1,6 @@
 trigger: none
 
+
 schedules:
 - cron: "0 0 * * *"
   displayName: Daily build
@@ -9,20 +10,38 @@ schedules:
     - dunfell
   always: true
 
-variables:
-  - template: templates/variables.yml
+stages:
+- stage: tclibc_newlib
+  displayName: tclibc_newlib
+  dependsOn: []
+  jobs:
+    - template: templates/build.yml
+      parameters:
+        pool:
+          vmImage: 'ubuntu-20.04'
+        machine: 'qemuarmv5'
+        tclibc: 'newlib'
+    - template: templates/build.yml
+      parameters:
+        pool:
+            vmImage: 'ubuntu-20.04'
+        machine: 'qemuarm64'
+        tclibc: 'newlib'
 
-jobs:
-  - template: templates/build.yml
-    parameters:
-      pool:
-        vmImage: 'ubuntu-20.04'
-      buildtype: 'poky'
-      machine: 'qemuarm'
+- stage: tclibc_baremetal
+  displayName: tclibc_baremetal
+  dependsOn: []
+  jobs:
+    - template: templates/build.yml
+      parameters:
+        pool:
+          vmImage: 'ubuntu-20.04'
+        machine: 'qemuarmv5'
+        tclibc: 'baremetal'
 
-  - template: templates/build.yml
-    parameters:
-      pool:
-        vmImage: 'ubuntu-20.04'
-      buildtype: 'poky'
-      machine: 'qemuarm64'
+    - template: templates/build.yml
+      parameters:
+        pool:
+          vmImage: 'ubuntu-20.04'
+        machine: 'qemuarm64'
+        tclibc: 'baremetal'

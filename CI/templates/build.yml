@@ -1,11 +1,11 @@
 parameters:
     pool: ''
     machine: ''
-    kernel: ''
-    buildtype: ''
+    tclibc: ''
+    build_branch: ''
 
 jobs:
-- job: ${{ parameters.machine }}_baremetal
+- job: ${{ parameters.machine }}_${{ parameters.tclibc }}
   pool: ${{ parameters.pool }}
   timeoutInMinutes: 0
 
@@ -13,9 +13,7 @@ jobs:
   - template: steps_setup.yml
     parameters:
       machine: ${{ parameters.machine }}
-      kernel: ${{ parameters.kernel }}
       build_branch: $(Build.SourceBranchName)
+      tclibc: ${{ parameters.tclibc }}
 
   - template: steps_build.yml
-    parameters:
-      buildtype: ${{ parameters.buildtype }}

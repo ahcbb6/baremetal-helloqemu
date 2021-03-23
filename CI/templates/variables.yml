@@ -1,8 +1,0 @@
-variables:
-  DL_DIR: '/home/vsts/downloads/'
-  SSTATE_DIR: '/home/vsts/sstate-cache/'
-  SSTATE_MIRRORS_DIR: '/home/vsts/sstate_mirrors/'
-  MACHINE_X86: 'x86-chromebook'
-  TCLIBC: 'newlib'
-  DEPLOY_ARTIFACTS_DIR: '/mnt/deploydir/'
-  PIPELINE_ID: $(System.DefinitionId)

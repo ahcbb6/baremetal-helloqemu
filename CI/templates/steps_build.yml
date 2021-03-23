@@ -1,44 +1,36 @@
-parameters:
-  build_branch: 'master'
-  machine: ''
-  kernel: ''
-  buildtype: ''
-
 steps:
-- ${{ if eq(parameters.buildtype, 'poky') }}:
-  - bash: |
-      echo "Building baremetal helloworld"
-      cd ~/poky
-      source oe-init-build-env
-      echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
-      echo "PREFERRED_PROVIDER_virtual/kernel = \"${KERNEL}\"" >> ./conf/local.conf
-      echo "Building with the following configuration:"
-      tail -n 10 conf/local.conf
-      bitbake baremetal-helloworld
-    condition: succeededOrFailed()
-    displayName: 'Build minimal image for $(MACHINE) - $(KERNEL)'
+- bash: |
+    echo "Building baremetal helloworld"
+    cd ~/poky
+    source oe-init-build-env
+    echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
+    echo "Building with the following configuration:"
+    tail -n 10 conf/local.conf
+    bitbake baremetal-helloworld
+  condition: succeededOrFailed()
+  displayName: 'Build minimal image'
 
 - bash: |
-    df -h
+    source azp-scripts/azp-helpers.sh
+    check_freespace
+    SASW_TOKEN="$(SASW_TOKEN)" sync_sstate
   condition: succeededOrFailed()
-  displayName: 'Check space after build'
+  displayName: 'Sync sstate'
 
-- ${{ if eq(parameters.buildtype, 'poky') }}:
-  - bash: |
-      echo "Moving artifacts to be deployed"
-      rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
-      ls -l /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/
-      # BIN
-      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.bin ${DEPLOY_ARTIFACTS_DIR}
-      # ELF
-      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.elf ${DEPLOY_ARTIFACTS_DIR}
-      # QEMUboot
-      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}
-      # QEMUboot
-      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.manifest ${DEPLOY_ARTIFACTS_DIR}
-    condition: succeededOrFailed()
-    displayName: 'Moving Artifacts - $(MACHINE) - $(KERNEL)'
+- bash: |
+    source azp-scripts/azp-helpers.sh
+    echo "Moving artifacts to be deployed"
+    rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
+    ls -l /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/
+    # BIN
+    mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.bin ${DEPLOY_ARTIFACTS_DIR}
+    # ELF
+    mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.elf ${DEPLOY_ARTIFACTS_DIR}
+    # QEMUboot      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}      # QEMUboot
+    mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.manifest ${DEPLOY_ARTIFACTS_DIR}
+  condition: succeededOrFailed()
+  displayName: 'Moving Artifacts'
 
 - publish: $(DEPLOY_ARTIFACTS_DIR)
-  artifact: $(MACHINE)-$(KERNEL)
+  artifact: $(MACHINE)-$(TCLIBC)
   condition: succeededOrFailed()
