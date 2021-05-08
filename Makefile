@@ -32,7 +32,7 @@ assemble: builddir
 
 # Compile source but dont link
 compile:
-	${CC} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
+	${CC} ${CFLAGS} ${LDFLAGS} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
 
 builddir:
 	mkdir -p ${BUILDDIR}
