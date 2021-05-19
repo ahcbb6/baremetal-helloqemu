@@ -25,3 +25,8 @@ stages:
         pool:
             vmImage: 'ubuntu-20.04'
         machine: 'qemuarm64'
+    - template: templates/build.yml
+      parameters:
+        pool:
+            vmImage: 'ubuntu-20.04'
+        machine: 'qemuriscv64'
