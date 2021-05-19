@@ -11,8 +11,8 @@ schedules:
   always: true
 
 stages:
-- stage: tclibc_newlib
-  displayName: tclibc_newlib
+- stage: baremetal
+  displayName: Baremetal
   dependsOn: []
   jobs:
     - template: templates/build.yml
@@ -26,22 +26,3 @@ stages:
         pool:
             vmImage: 'ubuntu-20.04'
         machine: 'qemuarm64'
-        tclibc: 'newlib'
-
-- stage: tclibc_baremetal
-  displayName: tclibc_baremetal
-  dependsOn: []
-  jobs:
-    - template: templates/build.yml
-      parameters:
-        pool:
-          vmImage: 'ubuntu-20.04'
-        machine: 'qemuarmv5'
-        tclibc: 'baremetal'
-
-    - template: templates/build.yml
-      parameters:
-        pool:
-          vmImage: 'ubuntu-20.04'
-        machine: 'qemuarm64'
-        tclibc: 'baremetal'

@@ -1,14 +1,21 @@
 steps:
 - bash: |
-    echo "Building baremetal helloworld"
+    echo "Building baremetal helloworld for ${MACHINE}"
     cd ~/poky
     source oe-init-build-env
+    mkdir -p ./conf/multiconfig
+    echo "BUILDCFG_VARS_append = \" TCLIBC\"" >> ./conf/local.conf
+    echo "BBMULTICONFIG = \"bare\"" >> ./conf/local.conf
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
+    echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
+    echo "MACHINE = \"${MACHINE}\"" >> ./conf/multiconfig/bare.conf
+    echo "TCLIBC = \"baremetal\"" >> ./conf/multiconfig/bare.conf
+    echo "TMPDIR = \"\${TOPDIR}/tmp-${MACHINE}-baremetal\"" >> ./conf/multiconfig/bare.conf
     echo "Building with the following configuration:"
     tail -n 10 conf/local.conf
-    bitbake baremetal-helloworld
+    bitbake mc::baremetal-helloworld mc:bare:baremetal-helloworld
   condition: succeededOrFailed()
-  displayName: 'Build minimal image'
+  displayName: 'Build baremetal images'
 
 - bash: |
     source azp-scripts/azp-helpers.sh
@@ -21,16 +28,28 @@ steps:
     source azp-scripts/azp-helpers.sh
     echo "Moving artifacts to be deployed"
     rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
-    ls -l /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/
+    # Newlib artifacts
     # BIN
     mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.bin ${DEPLOY_ARTIFACTS_DIR}
     # ELF
     mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.elf ${DEPLOY_ARTIFACTS_DIR}
-    # QEMUboot      mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}      # QEMUboot
+    # QEMUboot
+    mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}
+    # Manifest
     mv /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/baremetal-helloworld-*.manifest ${DEPLOY_ARTIFACTS_DIR}
+
+    # Baremetal artifacts
+    # BIN
+    mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.bin ${DEPLOY_ARTIFACTS_DIR}
+    # ELF
+    mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.elf ${DEPLOY_ARTIFACTS_DIR}
+    # QEMUboot
+    mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}
+    # Manifest
+    mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.manifest ${DEPLOY_ARTIFACTS_DIR}
   condition: succeededOrFailed()
   displayName: 'Moving Artifacts'
 
 - publish: $(DEPLOY_ARTIFACTS_DIR)
-  artifact: $(MACHINE)-$(TCLIBC)
+  artifact: $(MACHINE)
   condition: succeededOrFailed()

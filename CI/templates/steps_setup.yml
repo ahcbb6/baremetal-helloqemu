@@ -17,7 +17,6 @@ steps:
     esac
 
     echo "##vso[task.setvariable variable=DEPLOY_ARTIFACTS_DIR;]/mnt/deploydir/"
-    echo "##vso[task.setvariable variable=tclibc;]${{ parameters.tclibc }}"
   displayName: 'Set global variables'
 
 - bash: |
@@ -39,7 +38,7 @@ steps:
 
 - bash: |
     source azp-scripts/azp-helpers.sh
-    TCLIBC="${TCLIBC}" AZ_SAS="$(SAS_TOKEN)" RMWORK="0" localconf
+    AZ_SAS="$(SAS_TOKEN)" RMWORK="0" localconf
     add_layers skeleton
   continueOnError: false
   displayName: 'Create bitbake configuration'
