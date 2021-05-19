@@ -19,8 +19,7 @@ stages:
       parameters:
         pool:
           vmImage: 'ubuntu-20.04'
-        machine: 'qemuarmv5'
-        tclibc: 'newlib'
+        machine: 'qemuarm'
     - template: templates/build.yml
       parameters:
         pool:

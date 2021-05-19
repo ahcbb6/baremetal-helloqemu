@@ -7,8 +7,8 @@ steps:
         qemuarm64 )
             echo "##vso[task.setvariable variable=machine;]qemuarm64"
             ;;
-        qemuarmv5 )
-            echo "##vso[task.setvariable variable=machine;]qemuarmv5"
+        qemuarm )
+            echo "##vso[task.setvariable variable=machine;]qemuarm"
             ;;
         *)
             echo "Unknown MACHINE requested"
