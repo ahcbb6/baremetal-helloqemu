@@ -11,8 +11,8 @@ schedules:
   always: true
 
 stages:
-- stage: baremetal
-  displayName: Baremetal
+- stage: qemuarm
+  displayName: ARM
   dependsOn: []
   jobs:
     - template: templates/build.yml
@@ -20,11 +20,19 @@ stages:
         pool:
           vmImage: 'ubuntu-20.04'
         machine: 'qemuarm'
+- stage: qemuarm64
+  displayName: ARM64
+  dependsOn: []
+  jobs:
     - template: templates/build.yml
       parameters:
         pool:
             vmImage: 'ubuntu-20.04'
         machine: 'qemuarm64'
+- stage: riscv64
+  displayName: RISCV-64
+  dependsOn: []
+  jobs:
     - template: templates/build.yml
       parameters:
         pool:
