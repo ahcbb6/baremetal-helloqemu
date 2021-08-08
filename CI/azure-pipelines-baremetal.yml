@@ -38,3 +38,12 @@ stages:
         pool:
             vmImage: 'ubuntu-20.04'
         machine: 'qemuriscv64'
+- stage: riscv32
+  displayName: RISCV-32
+  dependsOn: []
+  jobs:
+    - template: templates/build.yml
+      parameters:
+        pool:
+            vmImage: 'ubuntu-20.04'
+        machine: 'qemuriscv32'
