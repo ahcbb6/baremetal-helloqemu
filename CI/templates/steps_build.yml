@@ -4,7 +4,7 @@ steps:
     cd ~/poky
     source oe-init-build-env
     mkdir -p ./conf/multiconfig
-    echo "BUILDCFG_VARS_append = \" TCLIBC\"" >> ./conf/local.conf
+    echo "BUILDCFG_VARS:append = \" TCLIBC\"" >> ./conf/local.conf
     echo "BBMULTICONFIG = \"bare\"" >> ./conf/local.conf
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
     echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
