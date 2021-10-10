@@ -15,3 +15,5 @@ jobs:
       build_branch: $(Build.SourceBranchName)
 
   - template: steps_build.yml
+    parameters:
+      machine: ${{ parameters.machine }}

@@ -21,13 +21,6 @@ steps:
 
 - bash: |
     source azp-scripts/azp-helpers.sh
-    check_freespace
-    SASW_TOKEN="$(SASW_TOKEN)" sync_sstate
-  condition: succeededOrFailed()
-  displayName: 'Sync sstate'
-
-- bash: |
-    source azp-scripts/azp-helpers.sh
     echo "Moving artifacts to be deployed"
     rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
     # Newlib artifacts
@@ -54,4 +47,8 @@ steps:
 
 - publish: $(DEPLOY_ARTIFACTS_DIR)
   artifact: $(MACHINE)
+  condition: succeededOrFailed()
+
+- publish: $(SSTATE_DIR)
+  artifact: 'SState-${{parameters.machine}}'
   condition: succeededOrFailed()
