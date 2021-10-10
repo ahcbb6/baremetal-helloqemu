@@ -1,11 +1,10 @@
 parameters:
     pool: ''
     machine: ''
-    tclibc: ''
     build_branch: ''
 
 jobs:
-- job: ${{ parameters.machine }}_${{ parameters.tclibc }}
+- job: ${{ parameters.machine }}
   pool: ${{ parameters.pool }}
   timeoutInMinutes: 0
 
@@ -14,6 +13,7 @@ jobs:
     parameters:
       machine: ${{ parameters.machine }}
       build_branch: $(Build.SourceBranchName)
-      tclibc: ${{ parameters.tclibc }}
 
   - template: steps_build.yml
+    parameters:
+      machine: ${{ parameters.machine }}
