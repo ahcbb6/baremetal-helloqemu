@@ -4,11 +4,22 @@ ifndef QEMUARCH
 $(error QEMUARCH needs to be passed as an argument to make)
 endif
 
+ifndef LIBC
+LIBC="baremetal"
+endif
+
 BUILDDIR=build/
 
 contains = $(foreach v,$2,$(if $(findstring $1,$v),$v))
 
+
+ifeq ($(LIBC),newlib)
+sources:=$(addsuffix ${QEMUARCH}, hello_newlib_ startup_)
+LIBS="-L../recipe-sysroot/usr/lib/ -l:libc.a"
+else
 sources:=$(addsuffix ${QEMUARCH}, hello_baremetal_ startup_)
+endif
+
 outfiles:=$(addprefix ${BUILDDIR}, ${sources})
 objs:=$(addsuffix .o, ${outfiles})
 lscript:=$(addsuffix ${QEMUARCH}, linkerscript_)
@@ -24,13 +35,14 @@ build: link
 # Link objects using the provided linker script
 link: assemble compile
 	sed -i 's~startup.o~$(call contains,startup,${objs})~g' ${lscript}.ld
-	${LD} -T${lscript}.ld ${objs} -o ${executable}.elf
+	${LD} -T${lscript}.ld ${objs} $(LIBS) -o ${executable}.elf
 
 # Assemble startup code
 assemble: builddir
 	${AS} $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
 
 # Compile source but dont link
+# ${CC} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
 compile:
 	${CC} ${CFLAGS} ${LDFLAGS} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
 
