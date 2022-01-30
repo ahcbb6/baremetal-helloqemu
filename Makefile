@@ -11,11 +11,14 @@ endif
 BUILDDIR=build/
 
 contains = $(foreach v,$2,$(if $(findstring $1,$v),$v))
-
+# LIBS="-L../recipe-sysroot/usr/lib/ -l:libc.a"
 
 ifeq ($(LIBC),newlib)
+ifneq ($(QEMUARCH),aarch64)
+sources:=$(addsuffix ${QEMUARCH}, hello_baremetal_ startup_)
+else
 sources:=$(addsuffix ${QEMUARCH}, hello_newlib_ startup_)
-LIBS="-L../recipe-sysroot/usr/lib/ -l:libc.a"
+endif
 else
 sources:=$(addsuffix ${QEMUARCH}, hello_baremetal_ startup_)
 endif
