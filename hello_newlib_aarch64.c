@@ -55,7 +55,7 @@ char buffer[BUFFER_SIZE];  /* Character buffer */
 uint8_t buffer_idx = 0;		/* Exactly 8 bits */
 
 static void check_cmd(void) {
-  if (!strncmp("YP\r", buffer, strlen("YP\r"))) {
+  if (!strncmp("Yocto\r", buffer, strlen("Yocto\r"))) {
     print_uart0("Welcome\n");
     /* Use ~ as a known behavior for testing purposes */
   } else if (!strncmp("?\r", buffer, strlen("?\r"))) {
@@ -68,7 +68,7 @@ static void check_cmd(void) {
 
 /* Entry function from startup.s */
 void c_entry() {
-  print_uart0("Hello OSSJ2020!\n");
+  print_uart0("Hello OpenEmbedded!\n");
   while (1) {
     char c;
     if (read_uart0(&c) == 0) {
