@@ -34,6 +34,27 @@ void print_uart0(const char* str) {
   }
 }
 
+int _read(int file, char *ptr, int len){
+  if (len==0){
+    return 0;
+  }
+  while(*FR & FR_RXFE);
+  *ptr++ = *UART0DR & DR_DATA_MASK;
+  for(int start=1;start<len;start++){
+    if (*FR & FR_RXFE){
+      break;
+    }
+    *ptr++ = *UART0DR & DR_DATA_MASK;
+  }
+  return start;
+}
+
+int _write(int file, char *ptr, int len){
+  for(int start=0;start <len;start++){
+  *UART0DR = *ptr++;    
+  }
+}
+
 uint8_t read_uart0(char* c) {
   /* Have we received anything? */
   if (*FR & FR_RXFE) {
@@ -66,20 +87,27 @@ static void check_cmd(void) {
 }
 
 
-/* Entry function from startup.s */
-void c_entry() {
-  print_uart0("Hello OpenEmbedded!\n");
-  while (1) {
-    char c;
-    if (read_uart0(&c) == 0) {
-      /* echo it */
-      putchar_uart0(c);
-      buffer[buffer_idx++ % BUFFER_SIZE] = c;
-      /* Have we reached a CR */
-      if (c == '\r') {
-	buffer_idx = 0u;
-	check_cmd();
-      }
-    }
-  }
+void main(void){
+  char c;
+  char *ptr = NULL;
+  c=getchar();
+  printf("got: %c\n", c);        
 }
+
+/* /\* Entry function from startup.s *\/ */
+/* void c_entry() { */
+/*   print_uart0("Hello OpenEmbedded!\n"); */
+/*   while (1) { */
+/*     char c; */
+/*     if (read_uart0(&c) == 0) { */
+/*       /\* echo it *\/ */
+/*       putchar_uart0(c); */
+/*       buffer[buffer_idx++ % BUFFER_SIZE] = c; */
+/*       /\* Have we reached a CR *\/ */
+/*       if (c == '\r') { */
+/* 	buffer_idx = 0u; */
+/* 	check_cmd(); */
+/*       } */
+/*     } */
+/*   } */
+/* } */

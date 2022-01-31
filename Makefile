@@ -11,7 +11,6 @@ endif
 BUILDDIR=build/
 
 contains = $(foreach v,$2,$(if $(findstring $1,$v),$v))
-# LIBS="-L../recipe-sysroot/usr/lib/ -l:libc.a"
 
 ifeq ($(LIBC),newlib)
 ifneq ($(QEMUARCH),aarch64)
