@@ -89,7 +89,7 @@ static void check_cmd(void) {
 }
 
 
-void main(void){
+void c_entry(void){
   char c;
   char *ptr = NULL;
   c=getchar();
