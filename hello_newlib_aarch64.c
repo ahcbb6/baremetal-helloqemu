@@ -41,7 +41,8 @@ int _read(int file, char *ptr, int len){
   }
   while(*FR & FR_RXFE);
   *ptr++ = *UART0DR & DR_DATA_MASK;
-  for(int start=1;start<len;start++){
+  int start=1;
+  for(start=1;start<len;start++){
     if (*FR & FR_RXFE){
       break;
     }
