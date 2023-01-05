@@ -4,6 +4,10 @@ ifndef QEMUARCH
 $(error QEMUARCH needs to be passed as an argument to make)
 endif
 
+ifeq ($(QEMUARCH),x86-64)
+$(error Something went wrong, this Makefile should not be used when QEMUARCH=x86-64, use Makefile from x86-64 directory instead)
+endif
+
 BUILDDIR=build/
 
 contains = $(foreach v,$2,$(if $(findstring $1,$v),$v))
