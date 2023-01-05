@@ -27,9 +27,14 @@ link: assemble compile
 	${LD} -T${lscript}.ld ${objs} -o ${executable}.elf
 
 # Assemble startup code
+ifeq ($(QEMUARCH),x86)
+assemble: builddir
+# startup code for qemux86 is using Intel syntax
+	nasm -f elf32 $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
+else
 assemble: builddir
 	${AS} $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
-
+endif
 # Compile source but dont link
 compile:
 	${CC} ${CFLAGS} ${LDFLAGS} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})

@@ -1,0 +1,28 @@
+/*
+Several sources use this code, I believe it originally came from:
+http://www.osdever.net/tutorials/view/brans-kernel-development-tutorial
+ */
+ENTRY(_start)
+phys = 0x00100000;
+SECTIONS
+{
+  .text phys : AT(phys) {
+    code = .;
+    *(.text)
+    *(.rodata)
+    . = ALIGN(4096);
+  }
+  .data : AT(phys + (data - code))
+  {
+    data = .;
+    *(.data)
+    . = ALIGN(4096);
+  }
+  .bss : AT(phys + (bss - code))
+  {
+    bss = .;
+    *(.bss)
+    . = ALIGN(4096);
+  }
+  end = .;
+}
