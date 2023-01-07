@@ -18,7 +18,7 @@ stages:
     - template: templates/build.yml
       parameters:
         pool:
-          vmImage: 'ubuntu-20.04'
+          vmImage: 'ubuntu-22.04'
         machine: 'qemuarm'
 - stage: qemuarm64
   displayName: ARM64
@@ -27,7 +27,7 @@ stages:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-20.04'
+            vmImage: 'ubuntu-22.04'
         machine: 'qemuarm64'
 - stage: riscv64
   displayName: RISCV-64
@@ -36,7 +36,7 @@ stages:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-20.04'
+            vmImage: 'ubuntu-22.04'
         machine: 'qemuriscv64'
 - stage: riscv32
   displayName: RISCV-32
@@ -45,5 +45,5 @@ stages:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-20.04'
+            vmImage: 'ubuntu-22.04'
         machine: 'qemuriscv32'
