@@ -42,6 +42,12 @@ steps:
     mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.qemuboot.conf ${DEPLOY_ARTIFACTS_DIR}
     # Manifest
     mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.manifest ${DEPLOY_ARTIFACTS_DIR}
+
+    # Conditionally add iso since it only exists for x86-64
+    if [ -f /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.iso ]; then
+        mv /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/baremetal-helloworld-*.iso ${DEPLOY_ARTIFACTS_DIR}
+    fi
+
   condition: succeededOrFailed()
   displayName: 'Moving Artifacts'
 

@@ -47,3 +47,21 @@ stages:
         pool:
             vmImage: 'ubuntu-22.04'
         machine: 'qemuriscv32'
+- stage: x86
+  displayName: x86
+  dependsOn: []
+  jobs:
+    - template: templates/build.yml
+      parameters:
+        pool:
+            vmImage: 'ubuntu-22.04'
+        machine: 'qemux86'
+- stage: x86_64
+  displayName: x86-64
+  dependsOn: []
+  jobs:
+    - template: templates/build.yml
+      parameters:
+        pool:
+            vmImage: 'ubuntu-22.04'
+        machine: 'qemux86_64'
