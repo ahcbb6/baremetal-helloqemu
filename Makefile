@@ -32,11 +32,11 @@ link: assemble compile
 
 # Assemble startup code
 ifeq ($(QEMUARCH),x86)
-assemble: builddir
+assemble: | builddir
 # startup code for qemux86 is using Intel syntax
 	nasm -f elf32 $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
 else
-assemble: builddir
+assemble: | builddir
 	${AS} $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
 endif
 # Compile source but dont link
