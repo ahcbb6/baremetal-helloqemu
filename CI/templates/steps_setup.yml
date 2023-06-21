@@ -49,7 +49,7 @@ steps:
     source: 'specific'
     project: $(System.TeamProjectId)
     pipeline: $(System.DefinitionId)
-    runVersion: 'latestFromBranch'
+    runVersion: 'latest'
     runBranch: 'master'
     artifact: 'SState-${{parameters.machine}}'
     targetPath: $(SSTATE_MIRRORS_DIR)
