@@ -50,7 +50,7 @@ steps:
     project: $(System.TeamProjectId)
     pipeline: $(System.DefinitionId)
     runVersion: 'latestFromBranch'
-    runBranch: $(BUILDBRANCH)
+    runBranch: 'master'
     artifact: 'SState-${{parameters.machine}}'
     targetPath: $(SSTATE_MIRRORS_DIR)
     allowPartiallySucceededBuilds: true
