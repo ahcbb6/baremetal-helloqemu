@@ -26,9 +26,13 @@ build: link
 	${OBJCOPY} -O binary ${executable}.elf ${executable}.bin
 
 # Link objects using the provided linker script
-link: assemble compile
+link: compile
 	sed -i 's~startup.o~$(call contains,startup,${objs})~g' ${lscript}.ld
 	${LD} -T${lscript}.ld ${objs} -o ${executable}.elf
+
+# Compile source but dont link
+compile: assemble
+	${CC} ${CFLAGS} ${LDFLAGS} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
 
 # Assemble startup code
 ifeq ($(QEMUARCH),x86)
@@ -39,9 +43,6 @@ else
 assemble: | builddir
 	${AS} $(filter startup%,${sources}).s -o $(call contains,startup,${objs})
 endif
-# Compile source but dont link
-compile:
-	${CC} ${CFLAGS} ${LDFLAGS} -c $(filter hello%,${sources}).c -o $(call contains,hello,${objs})
 
 builddir:
 	mkdir -p ${BUILDDIR}
