@@ -36,7 +36,6 @@ steps:
 
     global_variables_pipeline
     free_space_packages
-    setup_yp_deps
     cleanup_leftover_deps
     setup_yp_deps
     create_local_dirs
