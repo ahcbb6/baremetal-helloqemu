@@ -12,11 +12,11 @@ These are introductory examples to showcase the use of QEMU to run baremetal app
 | dunfell | [![Build Status][dunfellbadge]][dunfellpipeline] |
 
 [masterbadge]: https://dev.azure.com/ahcbb6/baremetal-qemu/_apis/build/status/baremetal-helloqemu?branchName=master
-[masterpipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=29&branchName=master
+[masterpipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=31&branchName=master
 [kirkstonebadge]: https://dev.azure.com/ahcbb6/baremetal-qemu/_apis/build/status/baremetal-helloqemu?branchName=kirkstone
-[kirkstonepipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=29&branchName=kirkstone
+[kirkstonepipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=31&branchName=kirkstone
 [dunfellbadge]: https://dev.azure.com/ahcbb6/baremetal-qemu/_apis/build/status/baremetal-helloqemu?branchName=dunfell
-[dunfellpipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=29&branchName=dunfell
+[dunfellpipeline]: https://dev.azure.com/ahcbb6/baremetal-qemu/_build/latest?definitionId=31&branchName=dunfell
 
 ## Usage: The Yocto Project & OpenEmbedded
 While these examples can easily be built manually using a toolchain from the host system, its purpose is to serve as examples for baremetal application programming on The Yocto Project and OpenEmbedded which allow users to build and run these examples, along with the required toolchain and QEMU easily using the following steps:
