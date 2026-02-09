@@ -2,8 +2,8 @@ steps:
 - bash: |
     source azp-scripts/azp-helpers.sh
     print_section "Building baremetal helloworld for ${MACHINE}"
-    cd ~/poky
-    source oe-init-build-env
+    cd ~/
+    source openembedded-core/oe-init-build-env
 
     # Create baremetal multiconfig
     mkdir -p ./conf/multiconfig
@@ -39,19 +39,31 @@ steps:
     rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
 
     # Newlib artifacts
-    find /home/vsts/poky/build/tmp/deploy/images/${MACHINE}/ -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" | while read binfile ; do
-    if [ ! -L ${binfile} ] ; then
-        echo "Processing artifact ${binfile}"
-        mv ${binfile} ${DEPLOY_ARTIFACTS_DIR}/newlib-$(basename ${binfile})
-    fi
+    files=$(find "/home/vsts/build/tmp/deploy/images/${MACHINE}" \
+    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
+    ! -type l)
+
+    [ -z "$files" ] && {
+      echo "ERROR: No artifacts found"
+      exit 1
+    }
+
+    for binfile in $files; do
+      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/newlib-$(basename "$binfile")"
     done
 
     # Baremetal artifacts
-    find /home/vsts/poky/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/ -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" | while read binfile ; do
-    if [ ! -L ${binfile} ] ; then
-        echo "Processing artifact ${binfile}"
-        mv ${binfile} ${DEPLOY_ARTIFACTS_DIR}/baremetal-$(basename ${binfile})
-    fi
+    files=$(find "/home/vsts/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/" \
+    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
+    ! -type l)
+
+    [ -z "$files" ] && {
+      echo "ERROR: No artifacts found"
+      exit 1
+    }
+
+    for binfile in $files; do
+      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/baremetal-$(basename "$binfile")"
     done
 
   condition: succeededOrFailed()

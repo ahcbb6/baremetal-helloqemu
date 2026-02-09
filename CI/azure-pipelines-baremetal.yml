@@ -1,5 +1,6 @@
-trigger: none
-
+trigger:
+- master
+- master-next
 
 schedules:
 - cron: "0 0 * * *"
@@ -7,62 +8,70 @@ schedules:
   branches:
     include:
     - master
-    - kirkstone
-    - dunfell
   always: true
 
 stages:
+
+- stage: native
+  displayName: Native Build
+  jobs:
+    - template: templates/native.yml
+      parameters:
+        pool:
+          vmImage: 'ubuntu-24.04'
+        machine: 'qemuarm64'
+
 - stage: qemuarm
   displayName: ARM
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-          vmImage: 'ubuntu-22.04'
+          vmImage: 'ubuntu-24.04'
         machine: 'qemuarm'
 - stage: qemuarm64
   displayName: ARM64
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-22.04'
+            vmImage: 'ubuntu-24.04'
         machine: 'qemuarm64'
 - stage: riscv64
   displayName: RISCV-64
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-22.04'
+            vmImage: 'ubuntu-24.04'
         machine: 'qemuriscv64'
 - stage: riscv32
   displayName: RISCV-32
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-22.04'
+            vmImage: 'ubuntu-24.04'
         machine: 'qemuriscv32'
 - stage: x86
   displayName: x86
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-22.04'
+            vmImage: 'ubuntu-24.04'
         machine: 'qemux86'
 - stage: x86_64
   displayName: x86-64
-  dependsOn: []
+  dependsOn: native
   jobs:
     - template: templates/build.yml
       parameters:
         pool:
-            vmImage: 'ubuntu-22.04'
+            vmImage: 'ubuntu-24.04'
         machine: 'qemux86_64'

@@ -9,16 +9,11 @@ jobs:
   timeoutInMinutes: 0
 
   steps:
-  - download: current
-    artifact: native-artifacts
-  - download: current
-    artifact: native-downloads
-
   - template: steps_setup.yml
     parameters:
       machine: ${{ parameters.machine }}
       build_branch: $(Build.SourceBranchName)
 
-  - template: steps_build.yml
+  - template: steps_native.yml
     parameters:
       machine: ${{ parameters.machine }}

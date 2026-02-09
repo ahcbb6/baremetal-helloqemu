@@ -35,7 +35,6 @@ steps:
     echo "##vso[task.setvariable variable=buildbranch;]refs/heads/${{ parameters.build_branch }}"
 
     global_variables_pipeline
-    free_space_packages
     cleanup_leftover_deps
     setup_yp_deps
     create_local_dirs
@@ -57,13 +56,18 @@ steps:
 
 - bash: |
     source azp-scripts/azp-helpers.sh
-    #GITHUB=1 BRANCH=test-branch clone_layers poky
-    GITHUB=0 BRANCH=${{ parameters.build_branch }} clone_layers poky
+    # To build from github, set pipeline variables GITHUB=1 and BRANCH=foo
+    # BRANCH=foo needs to exist in both oe-core and bitbake forks
+    if [ -z ${BRANCH} ]; then
+        export BRANCH="${{ parameters.build_branch }}"
+    fi
+    clone_layers oe-core
   continueOnError: false
   displayName: 'Clone Repositories'
 
 - bash: |
     source azp-scripts/azp-helpers.sh
     RMWORK="0" localconf
+    SELF="$(Build.SourcesDirectory)" add_layers
   continueOnError: false
   displayName: 'Create bitbake configuration'

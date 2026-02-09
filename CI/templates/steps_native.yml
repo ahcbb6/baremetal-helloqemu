@@ -1,0 +1,35 @@
+steps:
+- bash: |
+    source azp-scripts/azp-helpers.sh
+    print_section "Building native components"
+    cd ~/
+    source openembedded-core/oe-init-build-env
+    echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
+    echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
+
+    print_section "Building with the following configuration:"
+    echo "local.conf:"
+    tail -n 10 conf/local.conf
+
+    if [ -z "${BBTARGET}" ]; then
+      # Get native recipes
+      NATIVE_PACKAGES=$(bitbake baremetal-helloworld -g >/dev/null && grep -- '-native$' pn-buildlist | sort -u)
+      export BBTARGET="$NATIVE_PACKAGES"
+    fi
+
+    print_section "Running cmd: bitbake ${BBTARGET}"
+    bitbake ${BBTARGET}
+
+    # Download all components
+    bitbake baremetal-helloworld --runall fetch
+
+  condition: succeededOrFailed()
+  displayName: 'Build native'
+
+- publish: $(SSTATE_DIR)
+  artifact: 'native-artifacts'
+  condition: succeededOrFailed()
+
+- publish: $(DL_DIR)
+  artifact: 'native-downloads'
+  condition: succeededOrFailed()
