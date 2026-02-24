@@ -52,6 +52,20 @@ steps:
   displayName: 'Build baremetal images'
 
 - bash: |
+    function deploy_artifacts() {
+        files=$(find "/home/vsts/build/tmp/deploy/images/${MACHINE}" \
+                     \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
+                     ! -type l)
+
+        [ -z "$files" ] && {
+            echo "ERROR: No artifacts found"
+            exit 1
+        }
+
+        for binfile in $files; do
+            mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/${TCLIBC}-$(basename "$binfile")"
+        done
+    }
     source azp-scripts/azp-helpers.sh
     print_section "Moving artifacts to be deployed"
 
@@ -59,50 +73,17 @@ steps:
 
     # Newlib artifacts
     export TCLIBC="newlib"
-    files=$(find "/home/vsts/build/tmp/deploy/images/${MACHINE}" \
-    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
-    ! -type l)
-
-    [ -z "$files" ] && {
-      echo "ERROR: No artifacts found"
-      exit 1
-    }
-
-    for binfile in $files; do
-      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/${TCLIBC}-$(basename "$binfile")"
-    done
+    deploy_artifacts
 
     # Baremetal artifacts
     export TCLIBC="baremetal"
-    files=$(find "/home/vsts/build/tmp-${MACHINE}-${TCLIBC}/deploy/images/${MACHINE}/" \
-    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
-    ! -type l)
-
-    [ -z "$files" ] && {
-      echo "ERROR: No artifacts found"
-      exit 1
-    }
-
-    for binfile in $files; do
-      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/${TCLIBC}-$(basename "$binfile")"
-    done
+    deploy_artifacts
 
     case "$MACHINE" in
         qemuarm|qemuarm64|qemuriscv32|qemuriscv64)
             # Picolibc artifacts
             export TCLIBC="picolibc"
-            files=$(find "/home/vsts/build/tmp-${MACHINE}-${TCLIBC}/deploy/images/${MACHINE}/" \
-                         \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
-                         ! -type l)
-
-            [ -z "$files" ] && {
-                echo "ERROR: No artifacts found"
-                exit 1
-            }
-
-            for binfile in $files; do
-                mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/${TCLIBC}-$(basename "$binfile")"
-            done
+            deploy_artifacts
             ;;
         *)
             echo "Picolibc artifacts do not exist for this architecture"
