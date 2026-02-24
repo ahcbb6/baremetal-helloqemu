@@ -8,12 +8,21 @@ steps:
     # Create baremetal multiconfig
     mkdir -p ./conf/multiconfig
     echo "BUILDCFG_VARS:append = \" TCLIBC\"" >> ./conf/local.conf
-    echo "BBMULTICONFIG = \"bare\"" >> ./conf/local.conf
+    echo "BBMULTICONFIG = \"bare pico\"" >> ./conf/local.conf
+
+    # Newlib is default multiconfig
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
     echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
+
+    # Set up baremetal multiconfig
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/multiconfig/bare.conf
     echo "TCLIBC = \"baremetal\"" >> ./conf/multiconfig/bare.conf
     echo "TMPDIR = \"\${TOPDIR}/tmp-${MACHINE}-baremetal\"" >> ./conf/multiconfig/bare.conf
+
+    # Set up picolibc multiconfig
+    echo "MACHINE = \"${MACHINE}\"" >> ./conf/multiconfig/pico.conf
+    echo "TCLIBC = \"picolibc\"" >> ./conf/multiconfig/pico.conf
+    echo "TMPDIR = \"\${TOPDIR}/tmp-${MACHINE}-picolibc\"" >> ./conf/multiconfig/pico.conf
 
     print_section "Building with the following configuration:"
     echo "local.conf:"
@@ -21,9 +30,19 @@ steps:
     echo ""
     echo "conf/multiconfig/bare.conf:"
     tail -n 10 conf/multiconfig/bare.conf
+    echo ""
+    echo "conf/multiconfig/pico.conf:"
+    tail -n 10 conf/multiconfig/pico.conf
 
     if [ -z "${BBTARGET}" ]; then
-        export BBTARGET="mc::baremetal-helloworld mc:bare:baremetal-helloworld"
+        case "$MACHINE" in
+            qemuarm|qemuarm64|qemuriscv32|qemuriscv64)
+                export BBTARGET="mc::baremetal-helloworld mc:bare:baremetal-helloworld mc:pico:picolibc-helloworld"
+                ;;
+            *)
+                export BBTARGET="mc::baremetal-helloworld mc:bare:baremetal-helloworld"
+                ;;
+        esac
     fi
 
     print_section "Running cmd: bitbake ${BBTARGET}"
@@ -33,38 +52,46 @@ steps:
   displayName: 'Build baremetal images'
 
 - bash: |
+    function deploy_artifacts() {
+        echo $1
+        echo $2
+        echo $3
+        files=$(find "$1" \
+                     \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
+                     ! -type l)
+
+        [ -z "$files" ] && {
+            echo "ERROR: No artifacts found"
+            exit 1
+        }
+
+        for binfile in $files; do
+            mv "$binfile" "$2/$3-$(basename "$binfile")"
+        done
+    }
     source azp-scripts/azp-helpers.sh
     print_section "Moving artifacts to be deployed"
 
     rm -rf ${DEPLOY_ARTIFACTS_DIR}/*
 
     # Newlib artifacts
-    files=$(find "/home/vsts/build/tmp/deploy/images/${MACHINE}" \
-    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
-    ! -type l)
-
-    [ -z "$files" ] && {
-      echo "ERROR: No artifacts found"
-      exit 1
-    }
-
-    for binfile in $files; do
-      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/newlib-$(basename "$binfile")"
-    done
+    export TCLIBC="newlib"
+    deploy_artifacts /home/vsts/build/tmp/deploy/images/${MACHINE} ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
 
     # Baremetal artifacts
-    files=$(find "/home/vsts/build/tmp-${MACHINE}-baremetal/deploy/images/${MACHINE}/" \
-    \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
-    ! -type l)
+    export TCLIBC="baremetal"
+    deploy_artifacts /home/vsts/build/tmp-${MACHINE}-${TCLIBC}/deploy/images/${MACHINE}/ ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
 
-    [ -z "$files" ] && {
-      echo "ERROR: No artifacts found"
-      exit 1
-    }
-
-    for binfile in $files; do
-      mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/baremetal-$(basename "$binfile")"
-    done
+    case "$MACHINE" in
+        qemuarm|qemuarm64|qemuriscv32|qemuriscv64)
+            # Picolibc artifacts
+            export TCLIBC="picolibc"
+            deploy_artifacts /home/vsts/build/tmp-${MACHINE}-${TCLIBC}/deploy/images/${MACHINE}/ ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
+            ;;
+        *)
+            echo "Picolibc artifacts do not exist for this architecture"
+            ;;
+    esac
 
   condition: succeededOrFailed()
   displayName: 'Moving Artifacts'
