@@ -53,7 +53,7 @@ steps:
 
 - bash: |
     function deploy_artifacts() {
-        files=$(find "/home/vsts/build/tmp/deploy/images/${MACHINE}" \
+        files=$(find "/home/vsts/build/tmp/deploy/images/$1" \
                      \( -name "*.bin" -o -name "*.elf" -o -name "*.qemuboot.conf" -o -name "*.manifest" -o -name "*.iso" \) \
                      ! -type l)
 
@@ -63,7 +63,7 @@ steps:
         }
 
         for binfile in $files; do
-            mv "$binfile" "${DEPLOY_ARTIFACTS_DIR}/${TCLIBC}-$(basename "$binfile")"
+            mv "$binfile" "$2/$3-$(basename "$binfile")"
         done
     }
     source azp-scripts/azp-helpers.sh
@@ -73,17 +73,17 @@ steps:
 
     # Newlib artifacts
     export TCLIBC="newlib"
-    deploy_artifacts
+    deploy_artifacts ${MACHINE} ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
 
     # Baremetal artifacts
     export TCLIBC="baremetal"
-    deploy_artifacts
+    deploy_artifacts ${MACHINE} ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
 
     case "$MACHINE" in
         qemuarm|qemuarm64|qemuriscv32|qemuriscv64)
             # Picolibc artifacts
             export TCLIBC="picolibc"
-            deploy_artifacts
+            deploy_artifacts ${MACHINE} ${DEPLOY_ARTIFACTS_DIR} ${TCLIBC}
             ;;
         *)
             echo "Picolibc artifacts do not exist for this architecture"
