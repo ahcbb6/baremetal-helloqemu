@@ -9,6 +9,8 @@ steps:
     mkdir -p ./conf/multiconfig
     echo "BUILDCFG_VARS:append = \" TCLIBC\"" >> ./conf/local.conf
     echo "BBMULTICONFIG = \"bare pico\"" >> ./conf/local.conf
+    echo "DISTRO_FEATURES = \"\"" >> ./conf/local.conf
+    echo "DISTRO_FEATURES_BACKFILL:forcevariable = \"\"" >> ./conf/local.conf
 
     # Newlib is default multiconfig
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf

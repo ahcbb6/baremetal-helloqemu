@@ -6,6 +6,8 @@ steps:
     source openembedded-core/oe-init-build-env
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
     echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
+    echo "DISTRO_FEATURES = \"\"" >> ./conf/local.conf
+    echo "DISTRO_FEATURES_BACKFILL:forcevariable = \"\"" >> ./conf/local.conf
 
     print_section "Building with the following configuration:"
     echo "local.conf:"
