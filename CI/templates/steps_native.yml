@@ -6,8 +6,7 @@ steps:
     source openembedded-core/oe-init-build-env
     echo "MACHINE = \"${MACHINE}\"" >> ./conf/local.conf
     echo "TCLIBC = \"newlib\"" >> ./conf/local.conf
-    echo "DISTRO_FEATURES = \"\"" >> ./conf/local.conf
-    echo "DISTRO_FEATURES_BACKFILL:forcevariable = \"\"" >> ./conf/local.conf
+    echo "DISTRO_FEATURES_OPTED_OUT = \"3g acl alsa bluetooth debuginfod ext2 gobject-introspection-data ipv4 ipv6 multiarch nfc nfs opengl pci ptest pulseaudio seccomp vfat vulkan wayland wifi x11 xattr zeroconf\"" >> ./conf/local.conf
 
     print_section "Building with the following configuration:"
     echo "local.conf:"
